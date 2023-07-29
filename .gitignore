@@ -24,4 +24,4 @@ __pycache__/
 *.pyd
 
 # api keys
-config/credentials.py
+gpt/config/credentials.py
