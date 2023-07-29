@@ -1,5 +1,6 @@
 from typing import Any
 import openai
+import sys
 from config import credentials
 
 
@@ -11,7 +12,7 @@ example_prompt = [
     { "role": "system", "content": "If a given date is nonspecific, choose the widest range possible. For example, if they say '2015', assume that means 'from 2015-01-01 to 2015-12-31.'"},
     { "role": "system", "content": "Today's date is July 29, 2023."},  # todo: update this and the examples below to use `datetime`
 
-    # example interactions
+    # few-shot prompting: show gpt what we want with example interactions instead of telling it
     { "role": "system", "name": "example_user", "content": "How many pictures do I have from 2015?"},
     { "role": "system", "name": "example_assistant", "content": 'from:2015-01-01,to:2015-12-31'},
     { "role": "system", "name": "example_user", "content": "Show me photos from my trip to Italy last summer."},
@@ -24,12 +25,16 @@ example_prompt = [
     { "role": "system", "name": "example_assistant", "content": "from:2022-01-01,to:2022-12-31,location:washington D.C.,subject:washington monument"},
 ]
 
+# expected: from:2020-01-01,to:2020-12-31,location:Australia,subject:kangaroo
 test_msg = { "role": "user", "content": "Show me photos from when I saw a kangaroo in Australia three years ago." }
+if len(sys.argv) > 1:
+    test_msg["content"] = sys.argv[1]  # allow supplying test msgs from commandline
 
+# provide our example interactions + the new test msg
 response: Any = openai.ChatCompletion.create(
     model="gpt-3.5-turbo",
     messages=example_prompt + [test_msg],
-    temperature=0
+    temperature=0  # ensures responses are deterministic
 )
 
 print(response, end='\n\n\n')
