@@ -1,4 +1,5 @@
 import requests
+import openai
 from config import credentials
 
 
@@ -16,8 +17,8 @@ payload = {
 }
 
 headers = {
-"Content-Type": "application/json",
-"Authorization": f"Bearer {credentials.GPT3_API_KEY}"
+    "Content-Type": "application/json",
+    "Authorization": f"Bearer {credentials.GPT3_API_KEY}"
 }
 
 response = requests.post(URL, headers=headers, json=payload, stream=True)
