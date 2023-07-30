@@ -12,18 +12,40 @@ public class ValuesController : ControllerBase
     [Route("api/ProcessData")]
     public ActionResult ProcessData([FromBody] string payload)
     {
-        JObject jsonData = JObject.Parse(payload);
-        var kws = new Keywords
+        JObject jsonData;
+        try
         {
-            From = DateOnly.Parse(jsonData["from"].ToString()),
-            To = DateOnly.Parse(jsonData["to"].ToString()),
-            Location = jsonData.ContainsKey("location") ? jsonData["location"].ToString() : null,
-            Subject = jsonData.ContainsKey("subject") ? jsonData["subject"].ToString() : null,
-            With = jsonData.ContainsKey("with") ? jsonData["with"].ToObject<List<string>>() : null,
-        };
+            jsonData = JObject.Parse(payload);
+        }
+        catch (JsonReaderException e)
+        {
+            return Problem($"Bad JSON format: {e}");
+        }
 
-        var delta = kws?.To.DayNumber - kws?.From.DayNumber;
+        Keywords kws;
+        try
+        {
+            kws = new Keywords
+            {
+                From = DateOnly.Parse(jsonData.Value<string>("from") ?? "1970-01-01"),
+                To = DateOnly.Parse(jsonData.Value<string>("to") ?? "9999-01-01"),
+                Location = jsonData.Value<string>("location"),
+                Subject = jsonData.Value<string>("subject"),
+                With = jsonData.Value<JArray>("with")?.ToObject<List<string>>()
+            };
+        }
+        catch (FormatException e)
+        {
+            return Problem($"Bad date format: {e}");
+        }
+        catch (ArgumentNullException e)
+        {
+            return Problem($"No date given: {e}");
+        }
 
-        return Ok($"There are {delta ?? 0} days between {kws?.From} and {kws?.To}.");
+        var delta = kws.To.DayNumber - kws.From.DayNumber;
+        var kwstr = JsonConvert.SerializeObject(kws, Formatting.Indented);
+
+        return Ok($"{kwstr}\n\nThere are {delta} days between {kws.From} and {kws.To}.");
     }
 }
