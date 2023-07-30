@@ -1,4 +1,6 @@
-from typing import Literal, TypedDict, NotRequired
+from typing import Literal, TypedDict, NotRequired, Any
+
+JSON = dict[str, Any]
 
 
 class Message(TypedDict):

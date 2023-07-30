@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System.Dynamic;
+
 namespace api.Controllers;
 
 [ApiController]
@@ -12,40 +12,61 @@ public class ValuesController : ControllerBase
     [Route("api/ProcessData")]
     public ActionResult ProcessData([FromBody] string payload)
     {
-        JObject jsonData;
-        try
+        if (!TryParseJson(payload, out JObject? jsonData, out string? errorMessage))
         {
-            jsonData = JObject.Parse(payload);
-        }
-        catch (JsonReaderException e)
-        {
-            return Problem($"Bad JSON format: {e}");
+            return Problem(errorMessage!);
         }
 
-        Keywords kws;
-        try
+        if (!TryParseKeywords(jsonData!, out Keywords? kws, out errorMessage))
         {
-            kws = new Keywords
-            {
-                From = DateOnly.Parse(jsonData.Value<string>("from") ?? "1970-01-01"),
-                To = DateOnly.Parse(jsonData.Value<string>("to") ?? "9999-01-01"),
-                Location = jsonData.Value<string>("location"),
-                Subject = jsonData.Value<string>("subject"),
-                With = jsonData.Value<JArray>("with")?.ToObject<List<string>>()
-            };
-        }
-        catch (FormatException e)
-        {
-            return Problem($"Bad date format: {e}");
-        }
-        catch (ArgumentNullException e)
-        {
-            return Problem($"No date given: {e}");
+            return Problem(errorMessage!);
         }
 
-        var delta = kws.To.DayNumber - kws.From.DayNumber;
+        var delta = kws!.To.DayNumber - kws.From.DayNumber;
         var kwstr = JsonConvert.SerializeObject(kws, Formatting.Indented);
 
         return Ok($"{kwstr}\n\nThere are {delta} days between {kws.From} and {kws.To}.");
+    }
+    public static bool TryParseJson(string json, out JObject? jsonData, out string? errorMessage)
+    {
+        try
+        {
+            jsonData = JObject.Parse(json);
+            errorMessage = null;
+            return true;
+        }
+        catch (JsonReaderException e)
+        {
+            errorMessage = $"Bad JSON format: {e}";
+            jsonData = null;
+            return false;
+        }
+    }
+
+    public static bool TryParseKeywords(JObject jsonData, out Keywords? kws, out string? errorMessage)
+    {
+        DateOnly from, to;
+        try
+        {
+            from = DateOnly.Parse(jsonData.Value<string>("from") ?? "1970-01-01");
+            to = DateOnly.Parse(jsonData.Value<string>("to") ?? "9999-01-01");
+        }
+        catch (FormatException e)
+        {
+            errorMessage = $"Bad date format: {e}";
+            kws = null;
+            return false;
+        }
+
+        kws = new Keywords
+        {
+            From = from,
+            To = to,
+            Location = jsonData.Value<string>("location"),
+            Subject = jsonData.Value<string>("subject"),
+            With = jsonData.Value<JArray>("with")?.ToObject<List<string>>()
+        };
+        errorMessage = null;
+        return true;
     }
 }

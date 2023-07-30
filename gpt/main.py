@@ -1,5 +1,6 @@
 from typing import Tuple
 import openai
+
 import config.credentials
 import gpt_types as t
 
