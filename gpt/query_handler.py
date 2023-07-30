@@ -5,7 +5,7 @@ import json
 import keywords
 import gpt_types as t
 
-URL: str = "https://localhost:7095/Values/api/ProcessData"
+URL: str = "https://localhost:7095/Keywords/api/ProcessData"
 # ! NOTE: these 2 lines disable SSL verification
 # ! this is ok in dev but unacceptable in production
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)

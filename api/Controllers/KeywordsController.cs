@@ -6,7 +6,7 @@ namespace api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class ValuesController : ControllerBase
+public class KeywordsController : ControllerBase
 {
     [HttpPost]
     [Route("api/ProcessData")]
@@ -27,6 +27,7 @@ public class ValuesController : ControllerBase
 
         return Ok($"{kwstr}\n\nThere are {delta} days between {kws.From} and {kws.To}.");
     }
+
     public static bool TryParseJson(string json, out JObject? jsonData, out string? errorMessage)
     {
         try
