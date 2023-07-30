@@ -1,6 +1,8 @@
 import dataclasses
 import datetime as dt
-from typing import Optional
+from typing import Union, Dict, List, Type, Optional, Any
+
+JSON = Union[Dict[str, Any], List[Any], int, str, float, bool, Type[None]]
 
 
 # representation of what GPT converts a user query to
@@ -27,10 +29,10 @@ class Keywords:
         )
 
 
-# convert str from gpt to Keywords object
+# convert str from gpt to JSON object
 # assumes each key-value pair in the str is semicolon-delineated
 # check `test_str` for an example of how this should be formatted
-def parse_keywords(keywords: str) -> Keywords:
+def parse_keywords(keywords: str) -> JSON:
     parsed_keywords: dict[str, str | list[str]] = {}
     for kv_pair in keywords.split(";"):
         key, val = map(str.strip, kv_pair.split(":", 1))
@@ -38,11 +40,13 @@ def parse_keywords(keywords: str) -> Keywords:
             parsed_keywords[key] = [item.strip() for item in val[1:-1].split(",")]
         else:
             parsed_keywords[key] = val
-    return Keywords.from_dict(parsed_keywords)
+    return parsed_keywords
 
 
 if __name__ == "__main__":
     import sys
+    import json
 
     test_str = "from:2023-06-01;to:2023-06-30;location:switzerland;subject:skiing;with:[snow, mountain]"
-    print(parse_keywords(sys.argv[1] if len(sys.argv) > 1 else test_str))
+    kws: JSON = parse_keywords(sys.argv[1] if len(sys.argv) > 1 else test_str)
+    print(json.dumps(kws))
