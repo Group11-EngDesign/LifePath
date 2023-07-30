@@ -5,7 +5,7 @@ export default function App() {
   const [query, setQuery] = useState("");
   const [reply, setReply] = useState("");
 
-  const processQuery = () => fetch("https://localhost:7095/WeatherForecast")
+  const processQuery = () => fetch("https://opentdb.com/api.php?amount=1")
     .then(response => response.text())
     .then(data => setReply(data))
     .catch(err => setReply(err.message));
