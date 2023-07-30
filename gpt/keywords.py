@@ -41,8 +41,8 @@ def parse_keywords(keywords: str) -> JSON:
         else:
             parsed_keywords[key] = val
     # match format of .net DateOnly type
-    parsed_keywords["from"] = date_to_dict(parsed_keywords.get("from", "1970-01-01"))
-    parsed_keywords["to"] = date_to_dict(parsed_keywords.get("to", "9999-12-31"))
+    parsed_keywords["from"] = parsed_keywords.get("from", "1970-01-01")
+    parsed_keywords["to"] = parsed_keywords.get("to", "9999-12-31")
     return parsed_keywords
 
 

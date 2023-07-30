@@ -1,4 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.Dynamic;
 namespace api.Controllers;
 
 [ApiController]
@@ -7,10 +10,20 @@ public class ValuesController : ControllerBase
 {
     [HttpPost]
     [Route("api/ProcessData")]
-    public ActionResult ProcessData(Keywords keywords)
+    public ActionResult ProcessData([FromBody] string payload)
     {
-        var delta = keywords.To.DayNumber - keywords.From.DayNumber;
+        JObject jsonData = JObject.Parse(payload);
+        var kws = new Keywords
+        {
+            From = DateOnly.Parse(jsonData["from"].ToString()),
+            To = DateOnly.Parse(jsonData["to"].ToString()),
+            Location = jsonData.ContainsKey("location") ? jsonData["location"].ToString() : null,
+            Subject = jsonData.ContainsKey("subject") ? jsonData["subject"].ToString() : null,
+            With = jsonData.ContainsKey("with") ? jsonData["with"].ToObject<List<string>>() : null,
+        };
 
-        return Ok($"There are ${delta} days between ${keywords.From} and ${keywords.To}.");
+        var delta = kws?.To.DayNumber - kws?.From.DayNumber;
+
+        return Ok($"There are {delta ?? 0} days between {kws?.From} and {kws?.To}.");
     }
 }
