@@ -1,17 +1,18 @@
 from typing import Tuple
 import openai
+
 import config.credentials
-import gpt_types as types
+import gpt_types as t
 
 openai.api_key = config.credentials.GPT3_API_KEY
 
 
 # helper functions for building the prompt
-def context(msg: str) -> types.Message:
+def context(msg: str) -> t.Message:
     return {"role": "system", "content": msg}
 
 
-def sample_interaction(user: str, gpt: str) -> Tuple[types.Message, types.Message]:
+def sample_interaction(user: str, gpt: str) -> Tuple[t.Message, t.Message]:
     return (
         {"role": "system", "name": "example_user", "content": user},
         {"role": "system", "name": "example_assistant", "content": gpt},
@@ -19,7 +20,7 @@ def sample_interaction(user: str, gpt: str) -> Tuple[types.Message, types.Messag
 
 
 # few-shot prompting: show gpt what we want with example interactions instead of telling it
-starter_prompt: list[types.Message] = [
+starter_prompt: list[t.Message] = [
     # context
     context(
         "You extract relevant keywords in a machine-readable format that can be used to identify photos by their metadata."
@@ -51,25 +52,26 @@ starter_prompt: list[types.Message] = [
     ),
 ]
 
+
+def prompt_gpt(msg: str) -> str:
+    # provide our example interactions + the new test msg
+    response: t.ChatCompletion = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=starter_prompt + [{"role": "user", "content": msg}],
+        temperature=0,  # ensures responses are deterministic
+    )  # type: ignore
+    return response["choices"][0]["message"]["content"]
+
+
 if __name__ == "__main__":
     import sys
 
     # expected: from:2020-01-01,to:2020-12-31,location:Australia,subject:kangaroo
-    test_msg: types.Message = {
-        "role": "user",
-        "content": "Show me photos from when I saw a kangaroo in Australia three years ago.",
-    }
+    test_msg = "Show me photos from when I saw a kangaroo in Australia three years ago."
 
-    # allow supplying test msgs from commandline
-    if len(sys.argv) > 1:
-        test_msg["content"] = sys.argv[1]
+    if len(sys.argv) > 1:  # allow supplying test msgs from commandline
+        test_msg = sys.argv[1]
 
-    # provide our example interactions + the new test msg
-    response: types.ChatCompletion = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        messages=starter_prompt + [test_msg],
-        temperature=0,  # ensures responses are deterministic
-    )  # type: ignore
+    response = prompt_gpt(test_msg)
 
     print(response, end="\n\n\n")
-    print(response["choices"][0]["message"]["content"])

@@ -1,8 +1,10 @@
-from typing import Any, Literal, TypedDict, NotRequired
+from typing import Literal, TypedDict, NotRequired, Any
+
+JSON = dict[str, Any]
 
 
 class Message(TypedDict):
-    role: Literal["system"] | Literal["user"] | Literal["assistant"]
+    role: Literal["system", "user", "assistant", "function"]
     content: str
     name: NotRequired[str]
 
