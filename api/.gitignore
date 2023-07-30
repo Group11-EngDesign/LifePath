@@ -1,0 +1,90 @@
+# Build output
+bin/
+obj/
+
+# User-specific files
+*.userprefs
+*.suo
+*.user
+*.vs/
+*.vscode/
+
+# NuGet packages
+packages/
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+
+# Visual Studio files
+*.pdb
+*.dll
+*.exe
+*.cache
+*.log
+*.vspscc
+*.vssscc
+.vs/
+*_i.c
+*_p.c
+*.ncb
+*.sdf
+*.opensdf
+*.suo
+*.sln.docstates
+
+# Resharper files
+_resharper/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+# Build results of an Analyzer
+.Analyzer/
+
+# Folders to ignore
+_ReSharper.*
+*/[Bb]in/
+*/[Oo]bj/
+
+# MSTest test Results
+[Tt]est[Rr]esult*/
+
+# Files to ignore
+*.csproj.user
+*.resharper.user
+*.vspscc
+*.vssscc
+*.vsmdi
+*.csproj.vspscc
+*.iws
+*.ipch
+*.opendb
+*.VC.db
+*.scc
+*.bak
+*.cache
+*.ilk
+*.meta
+*.obj
+*.pch
+*.vspscc
+*.vssscc
+*.user
+*.dbmdl
+*.jfm
+*.inf
+*. suo
+*. suo.
+*. swp
+*. suo
+*. suo.
+Thumbs.db
+UserSettings.xml
+MapLocal.xml
+*.sqlite
+*.exe
+*.pyc
+*.cache
+*.log
+*.xlsx
+*.csv
