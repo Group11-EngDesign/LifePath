@@ -1,8 +1,8 @@
 import dataclasses
 import datetime as dt
-from typing import Union, Dict, List, Type, Optional, Any
+from typing import Optional, Any
 
-JSON = Union[Dict[str, Any], List[Any], int, str, float, bool, Type[None]]
+JSON = dict[str, Any]
 
 
 # representation of what GPT converts a user query to
@@ -33,14 +33,27 @@ class Keywords:
 # assumes each key-value pair in the str is semicolon-delineated
 # check `test_str` for an example of how this should be formatted
 def parse_keywords(keywords: str) -> JSON:
-    parsed_keywords: dict[str, str | list[str]] = {}
+    parsed_keywords: JSON = {}
     for kv_pair in keywords.split(";"):
         key, val = map(str.strip, kv_pair.split(":", 1))
         if val[0] == "[":  # list? useful for the `with` attribute
             parsed_keywords[key] = [item.strip() for item in val[1:-1].split(",")]
         else:
             parsed_keywords[key] = val
+    # match format of .net DateOnly type
+    parsed_keywords["from"] = date_to_dict(parsed_keywords.get("from", "1970-01-01"))
+    parsed_keywords["to"] = date_to_dict(parsed_keywords.get("to", "9999-12-31"))
     return parsed_keywords
+
+
+def date_to_dict(date: str) -> JSON:
+    obj: dt.datetime = dt.datetime.fromisoformat(date)
+    return {
+        "year": obj.year,
+        "month": obj.month,
+        "day": obj.day,
+        "dayOfWeek": obj.weekday(),
+    }
 
 
 if __name__ == "__main__":
@@ -48,5 +61,8 @@ if __name__ == "__main__":
     import json
 
     test_str = "from:2023-06-01;to:2023-06-30;location:switzerland;subject:skiing;with:[snow, mountain]"
-    kws: JSON = parse_keywords(sys.argv[1] if len(sys.argv) > 1 else test_str)
-    print(json.dumps(kws))
+    keywords: JSON = parse_keywords(sys.argv[1] if len(sys.argv) > 1 else test_str)
+    # parsed_keywords["from"] = date_to_dict(parsed_keywords.get("from", "1970-01-01"))
+    # parsed_keywords["to"] = date_to_dict(parsed_keywords.get("to", "9999-12-31"))
+
+    print(json.dumps(keywords))
