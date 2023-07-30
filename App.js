@@ -1,24 +1,29 @@
-import React from 'react';
-import { View, Text, TextInput, StatusBar, StyleSheet, Image } from 'react-native';
-
-
+import React, { useState } from 'react';
+import { View, Text, TextInput, StatusBar, StyleSheet, Image, Button } from 'react-native';
 
 export default function App() {
+  const [query, setQuery] = useState("");
+  const [reply, setReply] = useState("");
+
+  const processQuery = () => fetch("https://localhost:7095/WeatherForecast")
+    .then(response => response.text())
+    .then(data => setReply(data))
+    .catch(err => setReply(err.message));
+
   return (
     <View style={styles.container}>
-      
-
       <Image source={require('./assets/lifepathlogo.png')} style={styles.logo} />
       <View style={styles.searchBarContainer}>
         <TextInput
           style={styles.searchBar}
           placeholder="Search..."
           placeholderTextColor="gray"
+          value={query}
+          onChangeText={setQuery}
         />
       </View>
-
-      {/* Add the rest of your content here */}
-
+      <Button title='Go' onPress={processQuery} />
+      <Text>{reply}</Text>
       <StatusBar style="auto" />
     </View>
   );
