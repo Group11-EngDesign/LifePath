@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, StatusBar, StyleSheet, Image, Button } from 'react-native';
 import axios from 'axios';
 import { GPT3_API_KEY } from './env.js';
+import { starter_prompt } from './prompt.js';
 
 
 export default function App() {
@@ -18,7 +19,7 @@ export default function App() {
     // console.log(GPT3_API_KEY);
     axiosInstance.post("https://api.openai.com/v1/chat/completions", {
       model: "gpt-3.5-turbo",
-      messages: [{
+      messages: [...starter_prompt, {
         role: "user",
         content: query
       }]
