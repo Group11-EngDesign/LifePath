@@ -1,14 +1,19 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StatusBar, StyleSheet, Image, Button } from 'react-native';
+import axios from 'axios';
+
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 export default function App() {
   const [query, setQuery] = useState("");
   const [reply, setReply] = useState("");
 
-  const processQuery = () => fetch("https://opentdb.com/api.php?amount=1")
-    .then(response => response.text())
-    .then(data => setReply(data))
-    .catch(err => setReply(err.message));
+  const processQuery = () => {
+    axios.get("https://localhost:7095/weatherforecast")
+      .then(response => { console.log(response); return response.status; })
+      .then(data => { console.log("response received"); setReply(data); })
+      .catch(err => console.error(err.message));
+  };
 
   return (
     <View style={styles.container}>
