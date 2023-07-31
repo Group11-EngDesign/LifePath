@@ -1,17 +1,30 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StatusBar, StyleSheet, Image, Button } from 'react-native';
 import axios from 'axios';
+import { GPT3_API_KEY } from './env.js';
 
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 export default function App() {
   const [query, setQuery] = useState("");
   const [reply, setReply] = useState("");
+  const axiosInstance = axios.create({
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${GPT3_API_KEY}`
+    }
+  });
 
   const processQuery = () => {
-    axios.get("https://localhost:7095/weatherforecast")
-      .then(response => { console.log(response); return response.status; })
-      .then(data => { console.log("response received"); setReply(data); })
+    // console.log(GPT3_API_KEY);
+    axiosInstance.post("https://api.openai.com/v1/chat/completions", {
+      model: "gpt-3.5-turbo",
+      messages: [{
+        role: "user",
+        content: query
+      }]
+    })
+      .then(response => { console.log(response); return response.data; })
+      .then(data => { console.log(data); setReply(data.choices[0].message.content) })
       .catch(err => console.error(err.message));
   };
 
