@@ -46,7 +46,7 @@ export default function App() {
           onChangeText={setQuery}
         />
       </View>
-      <Button title='Go' onPress={processQuery} />
+      <Button title='GO' onPress={processQuery} />
       <Text>{reply}</Text>
       <StatusBar style="auto" />
     </View>
