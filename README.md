@@ -1,8 +1,9 @@
-# Group 11
-# EGN4950c 
+
 # LifePath
-Photo Application, AI, Image Recognition 
+Group 11 - EGN4950c 
+
 A short and descriptive title for your project.
+Photo Application, AI, Image Recognition 
 
 ## Description
 
