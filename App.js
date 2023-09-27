@@ -17,7 +17,7 @@ export default function App() {
 
   const processQuery = () => {
     console.log(query);
-    axiosInstance.post("http://127.0.0.1:8000/hello/", query)
+    axiosInstance.post("http://127.0.0.1:8000/hello/", query) // Change 127.0.0.1 to machine ip 
       .then(response => response.data)
       .then(data => {
         console.log(data);
