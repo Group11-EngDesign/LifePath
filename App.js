@@ -16,19 +16,12 @@ export default function App() {
   });
 
   const processQuery = () => {
-    // console.log(GPT3_API_KEY);
-    axiosInstance.post("https://api.openai.com/v1/chat/completions", {
-      model: "gpt-3.5-turbo",
-      messages: [...starterPrompt, {
-        role: "user",
-        content: query
-      }]
-    })
+    console.log(query);
+    axiosInstance.post("http://127.0.0.1:8000/hello/", query) // Change 127.0.0.1 to machine ip 
       .then(response => response.data)
       .then(data => {
         console.log(data);
-        const kws = data.choices[0].message.content;
-        setReply(JSON.stringify(parseKeywords(kws), null, 2));
+        setReply(data);
       })
       .catch(err => console.error(err.message));
   };
