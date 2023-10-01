@@ -2,17 +2,21 @@ import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 
 const PhotoDetails = ({ route }) => {
-    const { photo } = route.params;
+  const { photo } = route.params;
 
-    console.log('Photo:', photo); //checking if photo being passed
+  console.log('Photo:', photo); //checking if photo being passed
 
   return (
     <View style={styles.container}>
-      <Image source={{ uri: photo.url }} style={styles.photo} />
-    
+      <Image
+        source={{ uri: photo.metadata.smallImageUrl }}
+        style={styles.photo}
+        onError={(error) => console.error('Image Error:', error.nativeEvent)}
+      />
+
       <Text>{photo.author}</Text>
       <Text>{photo.width} x {photo.height}</Text>
-      
+
     </View>
   );
 };
