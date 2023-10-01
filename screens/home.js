@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StatusBar, StyleSheet, Image, Button, ActivityIndicator} from 'react-native';
+import { View, Text, TextInput, StatusBar, StyleSheet, Image, Button, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { starterPrompt, parseKeywords } from '../prompt';
 import axios from 'axios';
 import { getList } from '../api/picsum'
@@ -73,7 +73,9 @@ const Home = ({ navigation }) => {
           />
         </View>
   
-        <Button title='Go' onPress={processQuery} />
+        <TouchableOpacity onPress={processQuery} style={styles.searchButton}>
+          <Text style={styles.buttonText}>SEARCH</Text>
+        </TouchableOpacity>
         <Text>{reply}</Text>
   
         {/* Display the small image if available */}
@@ -93,7 +95,11 @@ const Home = ({ navigation }) => {
       flex: 1,
       justifyContent: 'flex-start',
       alignItems: 'center',
-      padding: 16,
+      padding: 30,
+      backgroundColor: '#bdc3c7', 
+    },
+    logo: {
+      marginBottom: 5,
     },
     searchBarContainer: {
       width: '100%',
@@ -101,7 +107,9 @@ const Home = ({ navigation }) => {
       borderRadius: 8,
       paddingHorizontal: 12,
       paddingVertical: 6,
-      marginBottom: 16,
+      marginBottom: 40,
+      borderWidth: 1,
+      borderColor: 'black',
     },
     searchBar: {
       fontSize: 16,
@@ -112,7 +120,20 @@ const Home = ({ navigation }) => {
       height: 100,
       marginBottom: 16,
     },
-  
+    searchButton: {
+      backgroundColor: 'green',
+      padding: 5,
+      borderRadius: 8,
+      borderWidth: 1, // Add a border to the button
+      borderColor: 'black', // Border color for the button
+      width: '100%',
+      alignItems: 'center', // Center text horizontally
+      marginTop: -20,
+      marginBottom: 20 , // Add some margin to separate from the search bar
+    },
+    buttonText: {
+      color: 'white',
+    },
   });
   
   export default Home;
