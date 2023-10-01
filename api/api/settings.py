@@ -26,8 +26,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']  # Allow requests from any host (for development)
-PORT = 8000  # Change the port number to 8080 (or any available port)
 
+PORT = 8000  # Change the port number to 8080 (or any available port)
 
 # Application definition
 
