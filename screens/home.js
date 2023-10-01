@@ -96,7 +96,7 @@ const Home = ({ navigation }) => {
       justifyContent: 'flex-start',
       alignItems: 'center',
       padding: 30,
-      backgroundColor: '#f0f0f0', 
+      backgroundColor: '#FFFFFF', 
     },
     logo: {
       marginBottom: 5,
