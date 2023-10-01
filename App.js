@@ -1,68 +1,20 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, StatusBar, StyleSheet, Image, Button } from 'react-native';
-import axios from 'axios';
-import { GPT3_API_KEY } from './env.js';
-import { starterPrompt, parseKeywords } from './prompt.js';
+import React, { useState, useEffect, useReducer, useCallback } from 'react';
+import { View, Text, TextInput, StatusBar, StyleSheet, Image, Button, ActivityIndicator} from 'react-native';
+import { NavigationContainer, useNavigation } from '@react-navigation/native';
 
+
+import { GalleryStack } from './navigation/stack.js';
+
+
+const Home = () => {
+  const navigation = useNavigation();
+};
 
 export default function App() {
-  const [query, setQuery] = useState("");
-  const [reply, setReply] = useState("");
-  const axiosInstance = axios.create({
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${GPT3_API_KEY}`
-    }
-  });
-
-  const processQuery = () => {
-    console.log(query);
-    axiosInstance.post("http://127.0.0.1:8000/hello/", query)
-      .then(response => response.data)
-      .then(data => {
-        console.log(data);
-        setReply(data);
-      })
-      .catch(err => console.error(err.message));
-  };
-
   return (
-    <View style={styles.container}>
-      <Image source={require('./assets/lifepathlogo.png')} style={styles.logo} />
-      <View style={styles.searchBarContainer}>
-        <TextInput
-          style={styles.searchBar}
-          defaultValue=''
-          placeholder="Search..."
-          placeholderTextColor="gray"
-          value={query}
-          onChangeText={setQuery}
-        />
-      </View>
-      <Button title='Go' onPress={processQuery} />
-      <Text>{reply}</Text>
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer>
+      <GalleryStack />
+      <Home /> 
+    </NavigationContainer>
   );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    padding: 16,
-  },
-  searchBarContainer: {
-    width: '100%',
-    backgroundColor: '#f0f0f0',
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    marginBottom: 16,
-  },
-  searchBar: {
-    fontSize: 16,
-    color: 'black',
-  },
-});
+};
