@@ -80,7 +80,9 @@ const Home = ({ navigation }) => {
   
         <StatusBar style="auto" />
   
-        <Button title="Photo Gallery" onPress={handleOpenPhotoGallery} />
+        <TouchableOpacity style={styles.searchButton} onPress={handleOpenPhotoGallery}>
+          <Text style={styles.buttonText}>GALLERY</Text>
+        </TouchableOpacity>
       </View>
     );
   };
@@ -110,6 +112,7 @@ const Home = ({ navigation }) => {
     searchBar: {
       fontSize: 16,
       color: '#7bb956',
+      padding: 3,
     },
     smallImage: {
       width: 100, // Adjust the dimensions as needed
