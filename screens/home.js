@@ -71,18 +71,21 @@ const Home = ({ navigation }) => {
             onChangeText={setQuery}
           />
         </View>
-  
-        <TouchableOpacity onPress={processQuery} style={styles.searchButton}>
-          <Text style={styles.buttonText}>SEARCH</Text>
-        </TouchableOpacity>
-        <Text>{reply}</Text>
 
-  
         <StatusBar style="auto" />
-  
-        <TouchableOpacity style={styles.searchButton} onPress={handleOpenPhotoGallery}>
-          <Text style={styles.buttonText}>GALLERY</Text>
-        </TouchableOpacity>
+
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity onPress={processQuery} style={styles.searchButton}>
+            <Text style={styles.buttonText}>SEARCH</Text>
+          </TouchableOpacity>
+          
+
+          <TouchableOpacity style={styles.searchButton} onPress={handleOpenPhotoGallery}>
+            <Text style={styles.buttonText}>GALLERY</Text>
+          </TouchableOpacity>
+        </View>
+
+        <Text>{reply}</Text>
       </View>
     );
   };
@@ -124,10 +127,13 @@ const Home = ({ navigation }) => {
     },
     searchButton: {
       backgroundColor: '#7bb956',
-      marginTop: 10,
+      margin: 10,
       paddingVertical: 10,
       paddingHorizontal: 20,
       borderRadius: 5,
+    },
+    buttonContainer: {
+      flexDirection: 'row',
     },
   });
   
