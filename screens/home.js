@@ -66,8 +66,7 @@ const Home = ({ navigation }) => {
           <TextInput
             style={styles.searchBar}
             defaultValue=''
-            placeholder="Search..."
-            placeholderTextColor="green"
+            placeholder="Ex. Find pictures from 2016..."
             value={query}
             onChangeText={setQuery}
           />
@@ -77,11 +76,7 @@ const Home = ({ navigation }) => {
           <Text style={styles.buttonText}>SEARCH</Text>
         </TouchableOpacity>
         <Text>{reply}</Text>
-  
-        {/* Display the small image if available */}
-        {smallImageUrl ? (
-          <Image source={{ uri: smallImageUrl }} style={styles.smallImage} />
-        ) : null}
+
   
         <StatusBar style="auto" />
   
@@ -102,37 +97,34 @@ const Home = ({ navigation }) => {
       marginBottom: 5,
     },
     searchBarContainer: {
-      width: '100%',
+      width: '80%',
       backgroundColor: '#f0f0f0',
       borderRadius: 8,
       paddingHorizontal: 12,
       paddingVertical: 6,
-      marginBottom: 40,
+      marginBottom: 20,
+      marginTop: 20,
       borderWidth: 1,
-      borderColor: 'black',
+      borderColor: '#7bb956',
     },
     searchBar: {
       fontSize: 16,
-      color: 'black',
+      color: '#7bb956',
     },
     smallImage: {
       width: 100, // Adjust the dimensions as needed
       height: 100,
       marginBottom: 16,
     },
-    searchButton: {
-      backgroundColor: 'green',
-      padding: 5,
-      borderRadius: 8,
-      borderWidth: 1, // Add a border to the button
-      borderColor: 'black', // Border color for the button
-      width: '100%',
-      alignItems: 'center', // Center text horizontally
-      marginTop: -20,
-      marginBottom: 20 , // Add some margin to separate from the search bar
-    },
     buttonText: {
       color: 'white',
+    },
+    searchButton: {
+      backgroundColor: '#7bb956',
+      marginTop: 10,
+      paddingVertical: 10,
+      paddingHorizontal: 20,
+      borderRadius: 5,
     },
   });
   
