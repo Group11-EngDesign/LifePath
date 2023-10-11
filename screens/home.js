@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, StatusBar, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import axios from 'axios';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import ImagePicker from 'react-native-image-picker';
 
 import { GPT3_API_KEY } from '../env';
 
@@ -23,6 +24,51 @@ const Home = ({ navigation }) => {
     }
   });
 
+  const handlePhotoUpload = () => {
+    const options = {
+      title: 'Select Photo',
+      storageOptions: {
+        skipBackup: true,
+        path: 'images',
+      },
+    };
+  
+    ImagePicker.showImagePicker(options, (response) => {
+      if (response.didCancel) {
+        console.log('User canceled photo selection');
+      } else if (response.error) {
+        console.log('ImagePicker Error: ', response.error);
+      } else {
+        // You can now send the selected photo to your Django backend for uploading.
+        // Use Axios or another method to send the image to your Django API.
+        // You may need to include your GPT3_API_KEY in the request headers.
+  
+        const formData = new FormData();
+        formData.append('photo', {
+          uri: response.uri,
+          type: response.type,
+          name: response.fileName,
+        });
+  
+        axiosInstance.post('http://:8000/upload-photo/', formData, {
+          headers: {
+            'Authorization': `Bearer ${GPT3_API_KEY}`,
+            'Content-Type': 'multipart/form-data',
+          },
+        })
+        .then(response => {
+          console.log(response.data);
+          // Handle success or display a success message to the user
+        })
+        .catch(err => {
+          console.error(err.message);
+          // Handle errors or display an error message to the user
+        });
+      }
+    });
+  };
+  
+
   const processQuery = () => {
     console.log(query);
 
@@ -42,7 +88,7 @@ const Home = ({ navigation }) => {
     }
 
     // Send the query to your API
-    axiosInstance.post("http://192.168.0.115:8000/hello/", query)
+    axiosInstance.post("http://10.0.0.2:8000/hello/", query)
       .then(response => response.data)
       .then(data => {
         console.log(data);
@@ -76,6 +122,10 @@ const Home = ({ navigation }) => {
 
         <TouchableOpacity style={styles.searchButton} onPress={handleOpenPhotoGallery}>
           <Text style={styles.buttonText}>GALLERY</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.searchButton} onPress={handlePhotoUpload}>
+          <Text style={styles.buttonText}>UPLOAD</Text>
         </TouchableOpacity>
       </View>
 
