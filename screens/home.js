@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, StatusBar, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import axios from 'axios';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import ImagePicker from 'react-native-image-crop-picker'; // Updated import
+import * as ImagePicker from 'expo-image-picker'; // Import Expo's ImagePicker
+import Constants from 'expo-constants'; // Import Constants to check permissions
 
 import { GPT3_API_KEY } from '../env';
 
@@ -20,40 +21,50 @@ const Home = ({ navigation }) => {
     }
   });
 
-  const handlePhotoUpload = () => {
-    ImagePicker.openPicker({ // Updated method
-      width: 300,
-      height: 400,
-      cropping: true,
-    })
-      .then((image) => {
-        // Your image handling code here
+  // Check and request camera roll permissions (Expo-specific)
+  useEffect(() => {
+    (async () => {
+      if (Constants.platform.ios) {
+        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== 'granted') {
+          alert('Sorry, we need camera roll permissions to make this work!');
+        }
+      }
+    })();
+  }, []);
 
-        const formData = new FormData();
-        formData.append('photo', {
-          uri: image.path, // Use image.path
-          type: image.mime, // Use image.mime
-          name: 'photo.jpg', // Provide a name
-        });
+  const handlePhotoUpload = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
 
-        axiosInstance.post('http://:8000/upload-photo/', formData, {
-          headers: {
-            'Authorization': `Bearer ${GPT3_API_KEY}`,
-            'Content-Type': 'multipart/form-data',
-          },
-        })
-          .then(response => {
-            console.log(response.data);
-            // Handle success or display a success message to the user
-          })
-          .catch(err => {
-            console.error(err.message);
-            // Handle errors or display an error message to the user
-          });
-      })
-      .catch((error) => {
-        console.log('ImagePicker Error: ', error);
+    if (!result.cancelled) {
+      // Handle the selected image using result.uri
+      const formData = new FormData();
+      formData.append('photo', {
+        uri: result.uri, // Use result.uri
+        type: 'image/jpeg', // You may specify the appropriate type
+        name: 'photo.jpg', // Provide a name
       });
+
+      axiosInstance.post('http://10.0.:8000/upload-photo/', formData, {
+        headers: {
+          'Authorization': `Bearer ${GPT3_API_KEY}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+        .then(response => {
+          console.log(response.data);
+          // Handle success or display a success message to the user
+        })
+        .catch(err => {
+          console.error(err.message);
+          // Handle errors or display an error message to the user
+        });
+    }
   };
 
   const handleOpenPhotoGallery = () => {
@@ -75,7 +86,7 @@ const Home = ({ navigation }) => {
       setSmallImageUrl("");
     }
 
-    axiosInstance.post("http://:8000/hello/", query)
+    axiosInstance.post("http://10.0.:8000/hello/", query)
       .then(response => response.data)
       .then(data => {
         console.log(data);
