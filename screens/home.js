@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, StatusBar, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import axios from 'axios';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import ImagePicker from 'react-native-image-picker';
+import ImagePicker from 'react-native-image-crop-picker'; // Updated import
 
 import { GPT3_API_KEY } from '../env';
 
@@ -13,10 +13,6 @@ const Home = ({ navigation }) => {
   const route = useRoute();
   const photos = route.params ? route.params.photos : []; // Get photos data from params
 
-  const handleOpenPhotoGallery = () => {
-    navigation.navigate('PhotoGallery');
-  };
-
   const axiosInstance = axios.create({
     headers: {
       "Content-Type": "application/json",
@@ -25,54 +21,48 @@ const Home = ({ navigation }) => {
   });
 
   const handlePhotoUpload = () => {
-    const options = {
-      title: 'Select Photo',
-      storageOptions: {
-        skipBackup: true,
-        path: 'images',
-      },
-    };
-  
-    ImagePicker.showImagePicker(options, (response) => {
-      if (response.didCancel) {
-        console.log('User canceled photo selection');
-      } else if (response.error) {
-        console.log('ImagePicker Error: ', response.error);
-      } else {
-        // You can now send the selected photo to your Django backend for uploading.
-        // Use Axios or another method to send the image to your Django API.
-        // You may need to include your GPT3_API_KEY in the request headers.
-  
+    ImagePicker.openPicker({ // Updated method
+      width: 300,
+      height: 400,
+      cropping: true,
+    })
+      .then((image) => {
+        // Your image handling code here
+
         const formData = new FormData();
         formData.append('photo', {
-          uri: response.uri,
-          type: response.type,
-          name: response.fileName,
+          uri: image.path, // Use image.path
+          type: image.mime, // Use image.mime
+          name: 'photo.jpg', // Provide a name
         });
-  
+
         axiosInstance.post('http://:8000/upload-photo/', formData, {
           headers: {
             'Authorization': `Bearer ${GPT3_API_KEY}`,
             'Content-Type': 'multipart/form-data',
           },
         })
-        .then(response => {
-          console.log(response.data);
-          // Handle success or display a success message to the user
-        })
-        .catch(err => {
-          console.error(err.message);
-          // Handle errors or display an error message to the user
-        });
-      }
-    });
+          .then(response => {
+            console.log(response.data);
+            // Handle success or display a success message to the user
+          })
+          .catch(err => {
+            console.error(err.message);
+            // Handle errors or display an error message to the user
+          });
+      })
+      .catch((error) => {
+        console.log('ImagePicker Error: ', error);
+      });
   };
-  
+
+  const handleOpenPhotoGallery = () => {
+    navigation.navigate('PhotoGallery');
+  };
 
   const processQuery = () => {
     console.log(query);
 
-    // Search for the keyword in photo metadata
     const keyword = query.toLowerCase();
     const photoWithKeyword = photos.find(photo =>
       photo.metadata && photo.metadata.keywords &&
@@ -80,15 +70,12 @@ const Home = ({ navigation }) => {
     );
 
     if (photoWithKeyword) {
-      // If a matching photo is found, set its small image URL
       setSmallImageUrl(photoWithKeyword.metadata.smallImageUrl);
     } else {
-      // If no matching photo is found, reset the small image URL
       setSmallImageUrl("");
     }
 
-    // Send the query to your API
-    axiosInstance.post("http://10.0.0.2:8000/hello/", query)
+    axiosInstance.post("http://:8000/hello/", query)
       .then(response => response.data)
       .then(data => {
         console.log(data);
