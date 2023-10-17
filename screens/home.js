@@ -24,7 +24,7 @@ const Home = ({ navigation }) => {
   // Check and request camera roll permissions (Expo-specific)
   useEffect(() => {
     (async () => {
-      if (Constants.platform.ios) {
+      if (Constants.platform.ios || Constants.platform.android) {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (status !== 'granted') {
           alert('Sorry, we need camera roll permissions to make this work!');
@@ -86,7 +86,7 @@ const Home = ({ navigation }) => {
       setSmallImageUrl("");
     }
 
-    axiosInstance.post("http://10.0.:8000/hello/", query)
+    axiosInstance.post("http://10.0:8000/hello/", query)
       .then(response => response.data)
       .then(data => {
         console.log(data);
