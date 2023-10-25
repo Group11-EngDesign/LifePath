@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, StatusBar, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import axios from 'axios';
 import { useNavigation, useRoute } from '@react-navigation/native';
-
 import { GPT3_API_KEY } from '../env';
+import { useFonts, Caveat_400Regular, Caveat_600SemiBold } from '@expo-google-fonts/caveat';
+
 
 const Home = ({ navigation }) => {
   const [query, setQuery] = useState(""); // Define query state
@@ -11,6 +12,12 @@ const Home = ({ navigation }) => {
   const [smallImageUrl, setSmallImageUrl] = useState(""); // Define state for small image URL
   const route = useRoute();
   const photos = route.params ? route.params.photos : []; // Get photos data from params
+  
+  // Load fonts
+  let [fontsLoaded] = useFonts({
+    CaveatRegular: Caveat_400Regular,
+    CaveatSemiBold: Caveat_600SemiBold,
+  });
 
   const handleOpenPhotoGallery = () => {
     navigation.navigate('PhotoGallery');
@@ -53,7 +60,7 @@ const Home = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Image source={require('../assets/lifepathlogo.png')} style={styles.logo} />
+      <Image source={require('../assets/logolp.png')} style={styles.logo} />
       <Text style={styles.title}>Your Life Memories</Text>
       <Text style={styles.subtitle}>Right at Your Fingertips</Text>
 
@@ -93,20 +100,22 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
   logo: {
-    marginBottom: 30,
+    width: 200, // Set the desired width
+    height: 150, // Set the desired height
+    marginTop: 1, // Add spacing below the logo
   },
   title: {
-    fontSize: 32,
+    fontSize: 28,
     fontWeight: 'bold',
     color: '#333',
-    marginBottom: 10,
-    fontFamily: 'Arial',
+    marginBottom: 0,
+    fontFamily: 'CaveatSemiBold',
   },
   subtitle: {
-    fontSize: 20,
+    fontSize: 18,
     color: '#7bb956',
     marginBottom: 40,
-    fontFamily: 'Arial',
+    fontFamily: 'CaveatRegular',
   },
   searchBarContainer: {
     width: '80%',
@@ -114,17 +123,19 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 6,
-    marginBottom: 20,
+    marginBottom: 30,
     borderWidth: 1,
     borderColor: '#7bb956',
   },
   searchBar: {
     fontSize: 16,
     color: '#7bb956',
+    marginBottom: 50,
     padding: 3,
   },
   buttonText: {
     color: 'white',
+    fontFamily: 'CaveatSemiBold',
   },
   searchButton: {
     backgroundColor: '#7bb956',

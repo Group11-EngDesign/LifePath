@@ -1,29 +1,39 @@
 import React, { useState } from 'react';
-import { View, Text, Image, StyleSheet, TextInput, TouchableOpacity, ScrollView } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import { View, Text, Image, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import { ScrollView } from 'react-native';
 
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 const PhotoDetails = ({ route }) => {
   const { photo } = route.params;
-  const [comment, setComment] = useState(''); // State to store user comments
-  const [comments, setComments] = useState([]); // State to store all comments
+  const [comment, setComment] = useState('');
+  const [comments, setComments] = useState([]);
+  const [replyTo, setReplyTo] = useState(null);
 
-  // Function to handle adding a comment
   const handleAddComment = () => {
     if (comment.trim() !== '') {
-      setComments([...comments, comment]); // Add the comment to the comments list
-      setComment(''); // Clear the input field
+      
+      if (replyTo !== null) {
+        const updatedComments = [...comments];
+        updatedComments[replyTo] = `${updatedComments[replyTo]}\nPictuReel Reply: ${comment}`;
+        setComments(updatedComments);
+        setReplyTo(null);
+      } else {
+        setComments([...comments, `User: ${comment}`]);
+      }
+      setComment('');
     }
   };
 
-  // Function to handle removing a comment
-  const handleRemoveComment = (index) => {
-    const updatedComments = [...comments];
-    updatedComments.splice(index, 1); // Remove the comment at the specified index
-    setComments(updatedComments);
+  const handleReply = (index) => {
+    setReplyTo(index);
   };
 
-  console.log('Photo:', photo); // Checking if photo is being passed
+  const handleRemoveComment = (index) => {
+    const updatedComments = [...comments];
+    updatedComments.splice(index, 1);
+    setComments(updatedComments);
+  };
 
   return (
     <View style={styles.container}>
@@ -37,15 +47,20 @@ const PhotoDetails = ({ route }) => {
       <Text>{photo.width} x {photo.height}</Text>
 
       <ScrollView style={styles.commentsContainer}>
-  {comments.map((commentText, index) => (
-    <View key={index} style={styles.commentContainer}>
-      <Text style={styles.commentText}>{commentText}</Text>
-      <TouchableOpacity onPress={() => handleRemoveComment(index)} style={styles.removeButton}>
-        <Icon name="trash-o" size={18} color="" />
-      </TouchableOpacity>
-    </View>
-  ))}
-</ScrollView>
+        {comments.map((commentText, index) => (
+          <View key={index} style={styles.commentContainer}>
+            <Text style={styles.commentText}>{commentText}</Text>
+            <View style={styles.commentActions}>
+            <TouchableOpacity onPress={() => handleReply(index)} style={styles.replyButton}>
+                <Icon name="reply" size={18} color="#7bb956" />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => handleRemoveComment(index)} style={styles.removeButton}>
+               <Icon name="trash-o" size={18} color="white" />
+              </TouchableOpacity>
+            </View>
+          </View>
+        ))}
+      </ScrollView>
 
       <TextInput
         style={styles.commentInput}
@@ -65,19 +80,21 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor:'white',
+    
   },
   photo: {
-    width: '100%',
-    height: 400,
-    margin: 5,
+    width: '50%',
+    height: 200,
+    marginTop: 5,
+    borderRadius: 20,
   },
   commentsContainer: {
-    maxHeight: 150,
     width: '100%',
+    flex: 1, // Ensure the ScrollView takes up all available space
   },
   commentContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
@@ -86,25 +103,30 @@ const styles = StyleSheet.create({
   commentText: {
     flex: 1,
   },
+  commentActions: {
+    flexDirection: 'row',
+  },
+  replyButton: {
+    marginRight: 10,
+  },
+  replyButtonText: {
+    color: 'green',
+  },
   removeButton: {
-    marginLeft: 10,
     padding: 5,
     backgroundColor: 'red',
     borderRadius: 5,
-  },
-  removeButtonText: {
-    color: 'white',
   },
   commentInput: {
     width: '80%',
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 5,
-    padding: 8,
-    marginTop: 10,
+    padding: 10,
+    marginBottom: 10,
   },
   commentButton: {
-    marginTop: 10,
+    marginBottom: 10,
     backgroundColor: 'green',
     padding: 10,
     borderRadius: 5,

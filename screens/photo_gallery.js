@@ -1,14 +1,12 @@
 import React, { useState, useEffect, useReducer, useCallback } from 'react';
-import { View, Text, ActivityIndicator, FlatList, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, ActivityIndicator, FlatList, Image, StyleSheet, TouchableOpacity} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { getList, formatPhotoUri } from '../api/picsum';
 import { actionCreators, initialState, reducer } from '../reducers/photos'
 import PhotoGrid from '../components/PhotoGrid'
 
-
-
 export default function PhotoGallery() {
-  const navigation = useNavigation(); // Access the navigation object
+  const navigation = useNavigation();
   const [state, dispatch] = useReducer(reducer, initialState);
   const { photos, nextPage, loading, error } = state;
 
@@ -27,7 +25,6 @@ export default function PhotoGallery() {
     fetchPhotos();
   }, []);
 
-  // We'll show an error only if the first page fails to load
   if (photos.length === 0) {
     if (loading) {
       return (
@@ -46,8 +43,6 @@ export default function PhotoGallery() {
     }
   }
 
-
-
   return (
     <View style={styles.container}>
       <PhotoGrid
@@ -62,13 +57,8 @@ export default function PhotoGallery() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  photo: {
-    width: 200,
-    height: 200,
-    margin: 5,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    backgroundColor: 'white',
   },
 });
-
