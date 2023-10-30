@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useReducer, useCallback } from 'react';
-import { View, Text, ActivityIndicator, FlatList, Image, StyleSheet, TouchableOpacity} from 'react-native';
+import { View, Text, ActivityIndicator, StyleSheet, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { getList, formatPhotoUri } from '../api/picsum';
-import { actionCreators, initialState, reducer } from '../reducers/photos'
-import PhotoGrid from '../components/PhotoGrid'
+import { actionCreators, initialState, reducer } from '../reducers/photos';
+import PhotoGrid from '../components/PhotoGrid';
 
 export default function PhotoGallery() {
   const navigation = useNavigation();
@@ -44,21 +44,19 @@ export default function PhotoGallery() {
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <PhotoGrid
         numColumns={3}
         photos={photos}
         onPressPhoto={(photo) => navigation.navigate('PhotoDetails', { photo })}
       />
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
     backgroundColor: 'white',
   },
 });

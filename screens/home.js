@@ -100,8 +100,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
   logo: {
-    width: 200, // Set the desired width
-    height: 150, // Set the desired height
+    width: 100, // Set the desired width
+    height: 75, // Set the desired height
     marginTop: 1, // Add spacing below the logo
   },
   title: {
