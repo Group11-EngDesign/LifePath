@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, StatusBar, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import axios from 'axios';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import * as ImagePicker from 'expo-image-picker'; // Import Expo's ImagePicker
+import Constants from 'expo-constants'; // Import Constants to check permissions
+
 import { GPT3_API_KEY } from '../env';
 import { useFonts, Caveat_400Regular, Caveat_600SemiBold } from '@expo-google-fonts/caveat';
 
@@ -19,10 +22,6 @@ const Home = ({ navigation }) => {
     CaveatSemiBold: Caveat_600SemiBold,
   });
 
-  const handleOpenPhotoGallery = () => {
-    navigation.navigate('PhotoGallery');
-  };
-
   const axiosInstance = axios.create({
     headers: {
       "Content-Type": "application/json",
@@ -30,10 +29,59 @@ const Home = ({ navigation }) => {
     }
   });
 
+  // Check and request camera roll permissions (Expo-specific)
+  useEffect(() => {
+    (async () => {
+      if (Constants.platform.ios || Constants.platform.android) {
+        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== 'granted') {
+          alert('Sorry, we need camera roll permissions to make this work!');
+        }
+      }
+    })();
+  }, []);
+
+  const handlePhotoUpload = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.cancelled) {
+      // Handle the selected image using result.uri
+      const formData = new FormData();
+      formData.append('photo', {
+        uri: result.uri, // Use result.uri
+        type: 'image/jpeg', // You may specify the appropriate type
+        name: 'photo.jpg', // Provide a name
+      });
+
+      axiosInstance.post('http://10.0.:8000/upload-photo/', formData, {
+        headers: {
+          'Authorization': `Bearer ${GPT3_API_KEY}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+        .then(response => {
+          console.log(response.data);
+          // Handle success or display a success message to the user
+        })
+        .catch(err => {
+          console.error(err.message);
+          // Handle errors or display an error message to the user
+        });
+    }
+  };
+
+  const handleOpenPhotoGallery = () => {
+    navigation.navigate('PhotoGallery');
+  };
+
   const processQuery = () => {
     console.log(query);
 
-    // Search for the keyword in photo metadata
     const keyword = query.toLowerCase();
     const photoWithKeyword = photos.find(photo =>
       photo.metadata && photo.metadata.keywords &&
@@ -41,15 +89,12 @@ const Home = ({ navigation }) => {
     );
 
     if (photoWithKeyword) {
-      // If a matching photo is found, set its small image URL
       setSmallImageUrl(photoWithKeyword.metadata.smallImageUrl);
     } else {
-      // If no matching photo is found, reset the small image URL
       setSmallImageUrl("");
     }
 
-    // Send the query to your API
-    axiosInstance.post("http://192.168.0.115:8000/hello/", query)
+    axiosInstance.post("http://10.0:8000/hello/", query)
       .then(response => response.data)
       .then(data => {
         console.log(data);
@@ -83,6 +128,10 @@ const Home = ({ navigation }) => {
 
         <TouchableOpacity style={styles.searchButton} onPress={handleOpenPhotoGallery}>
           <Text style={styles.buttonText}>GALLERY</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.searchButton} onPress={handlePhotoUpload}>
+          <Text style={styles.buttonText}>UPLOAD</Text>
         </TouchableOpacity>
       </View>
 
