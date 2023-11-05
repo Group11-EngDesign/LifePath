@@ -96,3 +96,54 @@ def Hello(name):
         return JsonResponse(str(parse_keywords(prompt_gpt(req))), safe=False)
     except ValueError as e:
         return Response(e.args[0], status.HTTP_400_BAD_REQUEST)
+
+import os
+from google.cloud import storage
+from datetime import datetime
+
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'essential-oasis-401701-72d556e2236a.json'
+
+storage_client = storage.Client()
+
+# Create a New Bucket
+
+bucket_name ='lifepath-data-bucket' # Choose a valid an unique bucket name
+bucket = storage_client.bucket(bucket_name)
+# Create a new bucket with the location specified
+#bucket = storage_client.create_bucket(bucket_name, location='US') Commented out after bucket is already created
+
+#Print Bucket Details
+
+#print(vars(bucket))
+
+#Accessing a specific Bucket
+
+#my_bucket = storage_client.get_bucket('lifepath-data-bucket')
+#print(my_bucket)
+
+# Upload Files
+
+def upload_to_bucket(blob_name, file_path, bucket_name):
+    try:
+        bucket = storage_client.get_bucket(bucket_name)
+        blob = bucket.blob(blob_name)
+        blob.upload_from_file(file_path, content_type="image/jpeg")
+    except Exception as e:
+        print(e)
+        return False
+
+# file_path = r'C:\Users\Hallo\Downloads\Turtle.jpg'
+# upload_to_bucket('Turtle Picture', file_path, 'lifepath-data-bucket')
+
+# Create your views here.
+@api_view(["POST"])
+def Upload(name):
+    try:
+        image = name.data["photo"]
+        unique_affix = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
+        file_name = f"demo_pic{unique_affix}"
+        upload_to_bucket(f"file_name", image, 'lifepath-data-bucket' )
+        return JsonResponse(f"'{file_name}' uploaded to cloud", safe=False)
+    except Exception as e:
+        print(e)
+        return Response(str(e), status.HTTP_400_BAD_REQUEST)
