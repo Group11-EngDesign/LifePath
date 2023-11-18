@@ -142,7 +142,7 @@ def Upload(name):
         image = name.data["photo"]
         unique_affix = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
         file_name = f"demo_pic{unique_affix}"
-        upload_to_bucket(f"file_name", image, 'lifepath-data-bucket' )
+        upload_to_bucket(file_name, image, 'lifepath-data-bucket' )
         return JsonResponse(f"'{file_name}' uploaded to cloud", safe=False)
     except Exception as e:
         print(e)
