@@ -96,3 +96,20 @@ def Hello(name):
         return JsonResponse(str(parse_keywords(prompt_gpt(req))), safe=False)
     except ValueError as e:
         return Response(e.args[0], status.HTTP_400_BAD_REQUEST)
+    
+    
+from django.shortcuts import render
+from django.http import HttpResponse
+from your_module import upload_to_bucket  # Import the function from your code
+
+
+def connect_to_database(request):
+    file_path = r'C:\Users\Hallo\Downloads\Turtle.jpg'
+    success = upload_to_bucket('Turtle Picture', file_path, 'lifepath-data-bucket')
+
+    if success:
+        message = "Connected to the database and uploaded the file successfully."
+    else:
+        message = "Failed to connect to the database or upload the file."
+
+    return render(request, 'database_connection.html', {'message': message})
