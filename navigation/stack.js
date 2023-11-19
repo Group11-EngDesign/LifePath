@@ -4,6 +4,7 @@ import HomeScreen from '../screens/home';
 import PhotoGallery from '../screens/photo_gallery';
 import PhotoDetails from '../screens/photodetails';
 import Login from '../screens/login';
+import DatabaseGallery from '../screens/database_gallery';
 
 
 
@@ -16,6 +17,8 @@ export const GalleryStack = () => {
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="PhotoGallery" component={PhotoGallery} />
         <Stack.Screen name="PhotoDetails" component={PhotoDetails} />
+        <Stack.Screen name="DatabaseGallery" component={DatabaseGallery} />
+        
       </Stack.Navigator>
     );
   };

@@ -1,6 +1,9 @@
 // DatabaseGallery.js
-import React from 'react';
-import { View, Text,} from 'react-native';
+import React, { useState, useEffect, useReducer, useCallback } from 'react';
+import { View, Text, ActivityIndicator, FlatList, Image, StyleSheet, TouchableOpacity, ScrollView} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { getList, formatPhotoUri } from '../api/picsum';
+import { actionCreators, initialState, reducer } from '../reducers/photos'
 
 
 const DatabaseGallery = () => {
