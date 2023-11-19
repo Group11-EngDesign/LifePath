@@ -78,6 +78,9 @@ const Home = ({ navigation }) => {
   const handleOpenPhotoGallery = () => {
     navigation.navigate('PhotoGallery');
   };
+  const handleOpenDatabaseGallery = () => {
+    navigation.navigate('DatabaseGallery');
+  };
 
   const processQuery = () => {
     console.log(query);
@@ -130,6 +133,10 @@ const Home = ({ navigation }) => {
           <Text style={styles.buttonText}>GALLERY</Text>
         </TouchableOpacity>
 
+        <TouchableOpacity style={styles.searchButton} onPress={handleOpenDatabaseGallery}>
+          <Text style={styles.buttonText}>DATABASE GALLERY</Text>
+        </TouchableOpacity>
+
         <TouchableOpacity style={styles.searchButton} onPress={handlePhotoUpload}>
           <Text style={styles.buttonText}>UPLOAD</Text>
         </TouchableOpacity>
@@ -149,7 +156,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
   logo: {
-    width: 200, // Set the desired width
+    width: 205, // Set the desired width
     height: 150, // Set the desired height
     marginTop: 1, // Add spacing below the logo
   },
@@ -192,9 +199,10 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
+    alignItems: 'center',
   },
   buttonContainer: {
-    flexDirection: 'row',
+    flexDirection: 'column',
   },
 });
 
