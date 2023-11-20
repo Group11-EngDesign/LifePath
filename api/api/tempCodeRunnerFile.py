@@ -22,7 +22,7 @@ bucket = storage_client.bucket(bucket_name)
 #print(my_bucket)
 
 # Upload Files
-
+'''
 def upload_to_bucket(blob_name, file_path, bucket_name):
     try:
         bucket = storage_client.get_bucket(bucket_name)
@@ -32,5 +32,7 @@ def upload_to_bucket(blob_name, file_path, bucket_name):
         print(e)
         return False
 
-file_path = r'C:\Users\Hallo\Downloads\Turtle.jpg'
-upload_to_bucket('Turtle Picture', file_path, 'lifepath-data-bucket')
+file_path = r'C:\Users\Hallo\Pictures\naruto storm generations.jpg'
+upload_to_bucket('Naruto Picture', file_path, 'lifepath-data-bucket')
+'''
+# Download Files
