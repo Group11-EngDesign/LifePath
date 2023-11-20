@@ -135,6 +135,24 @@ def upload_to_bucket(blob_name, file_path, bucket_name):
 # file_path = r'C:\Users\Hallo\Downloads\Turtle.jpg'
 # upload_to_bucket('Turtle Picture', file_path, 'lifepath-data-bucket')
 
+# Download Files function and testing code underneath (Takes file from DB and downloads it to device)
+
+def download_file_from_bucket(blob_name, file_path, bucket_name):
+    try:
+        bucket = storage_client.get_bucket(bucket_name)
+        blob = bucket.blob(blob_name)
+        with open(file_path, 'wb') as f:
+            storage_client.download_blob_to_file(blob, f)
+        return True
+    except Exception as e:
+        print(e)
+        return False
+
+''' 
+bucket_name = 'lifepath-data-bucket'
+print(download_file_from_bucket('demo_pic20231120_015517_598885', os.path.join(os.getcwd(), 'file1.jpg'), bucket_name)) 
+'''
+
 # Create your views here.
 @api_view(["POST"])
 def Upload(name):
