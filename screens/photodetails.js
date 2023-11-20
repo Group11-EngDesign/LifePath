@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
   photo: {
     width: '50%',
     height: 200,
-    marginTop: 5,
+    marginTop: 50,
     borderRadius: 20,
   },
   commentsContainer: {
@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   commentButton: {
-    marginBottom: 10,
+    marginBottom: 200,
     backgroundColor: 'green',
     padding: 10,
     borderRadius: 5,
