@@ -5,10 +5,10 @@ import axios from 'axios';
 const ImageGallery = () => {
   const [images, setImages] = useState([]);
 
-  useEffect(() => {
-    // Fetch images from the Django backend gallery endpoint
+  React.useEffect(() => {
     axios.get('http://10.0.0.3:8000/gallery/')
       .then(response => {
+        console.log(response.data);
         setImages(response.data);
       })
       .catch(error => {
@@ -17,17 +17,21 @@ const ImageGallery = () => {
   }, []);
 
   return (
-    <View style={styles.container}>
+    <View>
       <FlatList
         data={images}
-        keyExtractor={(item) => (item.id ? item.id.toString() : null)}
+        keyExtractor={(item, index) => (item.id ? item.id.toString() : index.toString())}
         renderItem={({ item }) => (
-          item.fields && item.fields.image_url ? (
-            <Image
-              source={{ uri: item.fields.image_url }}
-              style={styles.image}
-            />
-          ) : null
+          <View>
+            {item.image ? (
+              <Image
+                source={{ uri: item.image }}
+                style={styles.image}
+              />
+            ) : (
+              <Text>Invalid Image Data</Text>
+            )}
+          </View>
         )}
       />
     </View>
@@ -35,11 +39,6 @@ const ImageGallery = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   image: {
     width: 200,
     height: 200,
