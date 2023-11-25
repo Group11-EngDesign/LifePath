@@ -25,4 +25,5 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("hello/", views.Hello),
     path("upload/", views.Upload),
+    path("gallery/", views.Gallery),
 ]

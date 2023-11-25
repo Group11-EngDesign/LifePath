@@ -13,6 +13,12 @@ from django.conf import settings
 import json
 import openai
 from credentials import GPT3_API_KEY
+from .models import Image
+
+# Import necessary modules
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+
 
 openai.api_key = GPT3_API_KEY
 
@@ -162,6 +168,20 @@ def Upload(name):
         file_name = f"demo_pic{unique_affix}"
         upload_to_bucket(file_name, image, bucket_name )
         return JsonResponse(f"'{file_name}' uploaded to cloud", safe=False)
+    except Exception as e:
+        print(e)
+        return Response(str(e), status.HTTP_400_BAD_REQUEST)
+
+@api_view(["GET"])
+def Gallery(request):
+    try:
+        # Query all images from the database
+        images = Image.objects.all()
+
+        # Serialize the images to JSON
+        serialized_images = serializers.serialize("json", images)
+
+        return JsonResponse(serialized_images, safe=False)
     except Exception as e:
         print(e)
         return Response(str(e), status.HTTP_400_BAD_REQUEST)
