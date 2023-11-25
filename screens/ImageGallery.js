@@ -20,12 +20,14 @@ const ImageGallery = () => {
     <View style={styles.container}>
       <FlatList
         data={images}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item) => (item.id ? item.id.toString() : null)}
         renderItem={({ item }) => (
-          <Image
-            source={{ uri: item.fields.image_url }}
-            style={styles.image}
-          />
+          item.fields && item.fields.image_url ? (
+            <Image
+              source={{ uri: item.fields.image_url }}
+              style={styles.image}
+            />
+          ) : null
         )}
       />
     </View>
