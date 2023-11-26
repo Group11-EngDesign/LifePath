@@ -8,6 +8,7 @@ import Constants from 'expo-constants'; // Import Constants to check permissions
 import { GPT3_API_KEY } from '../env';
 import { useFonts, Caveat_400Regular, Caveat_600SemiBold } from '@expo-google-fonts/caveat';
 
+const MY_IP = "10.0.0.3"; // replace this with ur IP to communicate w backend
 
 const Home = ({ navigation }) => {
   const [query, setQuery] = useState(""); // Define query state
@@ -15,7 +16,7 @@ const Home = ({ navigation }) => {
   const [smallImageUrl, setSmallImageUrl] = useState(""); // Define state for small image URL
   const route = useRoute();
   const photos = route.params ? route.params.photos : []; // Get photos data from params
-  
+
   // Load fonts
   let [fontsLoaded] = useFonts({
     CaveatRegular: Caveat_400Regular,
@@ -49,16 +50,17 @@ const Home = ({ navigation }) => {
       quality: 1,
     });
 
-    if (!result.cancelled) {
+    if (!result.canceled) {
       // Handle the selected image using result.uri
       const formData = new FormData();
       formData.append('photo', {
-        uri: result.uri, // Use result.uri
+        uri: result.assets[0].uri, // Use result.uri
         type: 'image/jpeg', // You may specify the appropriate type
         name: 'photo.jpg', // Provide a name
       });
+      console.log(result);
 
-      axiosInstance.post('http://10.0.:8000/upload-photo/', formData, {
+      axiosInstance.post(`http://${MY_IP}:8000/upload/`, formData, {
         headers: {
           'Authorization': `Bearer ${GPT3_API_KEY}`,
           'Content-Type': 'multipart/form-data',
@@ -79,6 +81,10 @@ const Home = ({ navigation }) => {
     navigation.navigate('PhotoGallery');
   };
 
+  const handleOpenDatabaseGallery = () => {
+    navigation.navigate('ImageGallery');
+  };
+
   const processQuery = () => {
     console.log(query);
 
@@ -94,7 +100,7 @@ const Home = ({ navigation }) => {
       setSmallImageUrl("");
     }
 
-    axiosInstance.post("http://10.0:8000/hello/", query)
+    axiosInstance.post(`http://${MY_IP}:8000/hello/`, query)
       .then(response => response.data)
       .then(data => {
         console.log(data);
@@ -133,6 +139,12 @@ const Home = ({ navigation }) => {
         <TouchableOpacity style={styles.searchButton} onPress={handlePhotoUpload}>
           <Text style={styles.buttonText}>UPLOAD</Text>
         </TouchableOpacity>
+
+        <TouchableOpacity
+        style={styles.searchButton}
+        onPress={handleOpenDatabaseGallery}>
+        <Text style={styles.buttonText}>DATABASE GALLERY</Text>
+      </TouchableOpacity>
       </View>
 
       <Text>{reply}</Text>
@@ -149,7 +161,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
   logo: {
-    width: 200, // Set the desired width
+    width: 205, // Set the desired width
     height: 150, // Set the desired height
     marginTop: 1, // Add spacing below the logo
   },
@@ -192,9 +204,10 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
+    alignItems: 'center',
   },
   buttonContainer: {
-    flexDirection: 'row',
+    flexDirection: 'column',
   },
 });
 

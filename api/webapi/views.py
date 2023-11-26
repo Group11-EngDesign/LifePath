@@ -13,6 +13,12 @@ from django.conf import settings
 import json
 import openai
 from credentials import GPT3_API_KEY
+from .models import Image
+
+# Import necessary modules
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+
 
 openai.api_key = GPT3_API_KEY
 
@@ -96,20 +102,86 @@ def Hello(name):
         return JsonResponse(str(parse_keywords(prompt_gpt(req))), safe=False)
     except ValueError as e:
         return Response(e.args[0], status.HTTP_400_BAD_REQUEST)
-    
-    
-from django.shortcuts import render
-from django.http import HttpResponse
-from your_module import upload_to_bucket  # Import the function from your code
 
+import os
+from google.cloud import storage
+from datetime import datetime
 
-def connect_to_database(request):
-    file_path = r'C:\Users\Hallo\Downloads\Turtle.jpg'
-    success = upload_to_bucket('Turtle Picture', file_path, 'lifepath-data-bucket')
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'essential-oasis-401701-72d556e2236a.json'
 
-    if success:
-        message = "Connected to the database and uploaded the file successfully."
-    else:
-        message = "Failed to connect to the database or upload the file."
+storage_client = storage.Client()
 
-    return render(request, 'database_connection.html', {'message': message})
+# Create a New Bucket
+
+bucket_name ='lifepath-data-bucket' # Choose a valid an unique bucket name
+bucket = storage_client.bucket(bucket_name)
+# Create a new bucket with the location specified
+#bucket = storage_client.create_bucket(bucket_name, location='US') Commented out after bucket is already created
+
+#Print Bucket Details
+
+#print(vars(bucket))
+
+#Accessing a specific Bucket
+
+#my_bucket = storage_client.get_bucket('lifepath-data-bucket')
+#print(my_bucket)
+
+# Upload Files
+
+def upload_to_bucket(blob_name, file_path, bucket_name):
+    try:
+        bucket = storage_client.get_bucket(bucket_name)
+        blob = bucket.blob(blob_name)
+        blob.upload_from_file(file_path, content_type="image/jpeg")
+    except Exception as e:
+        print(e)
+        return False
+
+# file_path = r'C:\Users\Hallo\Downloads\Turtle.jpg'
+# upload_to_bucket('Turtle Picture', file_path, 'lifepath-data-bucket')
+
+# Download Files function and testing code underneath (Takes file from DB and downloads it to device)
+
+def download_file_from_bucket(blob_name, file_path, bucket_name):
+    try:
+        bucket = storage_client.get_bucket(bucket_name)
+        blob = bucket.blob(blob_name)
+        with open(file_path, 'wb') as f:
+            storage_client.download_blob_to_file(blob, f)
+        return True
+    except Exception as e:
+        print(e)
+        return False
+
+''' 
+bucket_name = 'lifepath-data-bucket'
+print(download_file_from_bucket('demo_pic20231120_015517_598885', os.path.join(os.getcwd(), 'file1.jpg'), bucket_name)) 
+'''
+
+# Create your views here.
+@api_view(["POST"])
+def Upload(name):
+    try:
+        image = name.data["photo"]
+        unique_affix = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
+        file_name = f"demo_pic{unique_affix}"
+        upload_to_bucket(file_name, image, bucket_name )
+        return JsonResponse(f"'{file_name}' uploaded to cloud", safe=False)
+    except Exception as e:
+        print(e)
+        return Response(str(e), status.HTTP_400_BAD_REQUEST)
+
+@api_view(["GET"])
+def Gallery(request):
+    try:
+        # Query all images from the database
+        images = Image.objects.all()
+
+        # Serialize the images to JSON
+        serialized_images = serializers.serialize("json", images)
+
+        return JsonResponse(serialized_images, safe=False)
+    except Exception as e:
+        print(e)
+        return Response(str(e), status.HTTP_400_BAD_REQUEST)
