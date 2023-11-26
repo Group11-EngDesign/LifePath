@@ -8,7 +8,7 @@ os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = "visionai-405216-7f0e65e517c7.jso
 # Instantiates a client
 client = vision.ImageAnnotatorClient()
 
-image_file_path = './images/stockimage2.jpg'
+image_file_path = r"C:\PythonVenv\google_vision_ai\images\smile.jpeg"
 image = prepare_image_local(image_file_path)
 
 response = client.face_detection(image=image)

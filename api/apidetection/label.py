@@ -29,7 +29,7 @@ client = vision.ImageAnnotatorClient()
 #     print(label.score)
     
 
-image_path = '.\images\newyork.jpg'
+image_path = r"C:\PythonVenv\google_vision_ai\images\00204_s_10ag9mmbtb0087.jpg"
 image = prepare_image_local(image_path)   
 va = VisionAI(client, image)
 label_detections = va.label_detection()

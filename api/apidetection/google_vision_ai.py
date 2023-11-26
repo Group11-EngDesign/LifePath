@@ -144,6 +144,7 @@ class VisionAI:
     def text_detection(self):
         response = self.client.text_detection(image=self.image)
         texts = response.text_annotations
+        print(f"{response=}")
         if texts:
             results = []
             for text in texts:

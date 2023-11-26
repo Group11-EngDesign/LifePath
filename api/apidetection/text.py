@@ -8,13 +8,14 @@ os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = "visionai-405216-7f0e65e517c7.jso
 # Instantiates a client
 client = vision.ImageAnnotatorClient()
 
-image_file_path = './images/stockimage7.jpg'
+image_file_path = r"C:\PythonVenv\google_vision_ai\images\stockimage4.jpg"
 image = prepare_image_local(image_file_path)
 va = VisionAI(client, image)
 
 import sys
 
 texts = va.text_detection()
+print(texts)
 for indx, text in enumerate(texts):
     print(text.description)
     draw_boundary(image_file_path, text.bounding_poly, text.description)
