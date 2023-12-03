@@ -50,14 +50,17 @@ const Home = ({ navigation }) => {
       aspect: [4, 3],
       quality: 1,
     });
-
-    if (!result.canceled) {
-      // Handle the selected image using result.uri
+  
+    if (!result.cancelled) {
+      // Handle the selected images using result.assets
       const formData = new FormData();
-      formData.append('photo', {
-        uri: result.assets[0].uri, // Use result.uri
-        type: 'image/jpeg', // You may specify the appropriate type
-        name: 'photo.jpg', // Provide a name
+      
+      result.assets.forEach((asset, index) => {
+        formData.append(`photo${index}`, {
+          uri: asset.uri,
+          type: 'image/jpeg',
+          name: `photo${index}.jpg`,
+        });
       });
       console.log(result);
 
