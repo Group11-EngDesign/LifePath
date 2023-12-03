@@ -68,7 +68,7 @@ def add_metadata_to_blob(blob_name, bucket_name, metadata):
 # Function to extract event metadata based on Vision API labels
 def get_event_metadata(label_detections):
     # Example: Check if specific labels are present and assign corresponding event metadata
-    event_labels = ['Smile', 'Thanksgiving', 'New Years', 'Valentines Day', 'Fourth of July', 'Halloween']
+    event_labels = ['Christmas', 'Thanksgiving', 'New Years', 'Valentines Day', 'Fourth of July', 'Halloween']
     for label in label_detections:
         if label.description in event_labels:
             return {'event': label.description}
