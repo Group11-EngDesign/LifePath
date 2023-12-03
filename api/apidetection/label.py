@@ -31,7 +31,7 @@ storage_client = storage.Client()
 #     print(label.score)
     
 
-# image_path = r"C:\Users\Hallo\Downloads\DIY-Valentines-Day-Crafts-Props_6-1440x2157.jpg"
+# image_path = r"C:\Users\Hallo\Downloads\christmas-gettyimages-184652817.jpg"
 # image = prepare_image_local(image_path)   
 # va = VisionAI(client, image)
 # label_detections = va.label_detection()
@@ -67,11 +67,13 @@ def add_metadata_to_blob(blob_name, bucket_name, metadata):
 
 # Function to extract event metadata based on Vision API labels
 def get_event_metadata(label_detections):
-    # Example: Check if specific labels are present and assign corresponding event metadata
-    event_labels = ['Christmas', 'Thanksgiving', 'New Years', 'Valentines Day', 'Fourth of July', 'Halloween']
+    # Example: Check if any label descriptions contain event keywords
+    event_keywords = ['Christmas', 'Thanksgiving', 'New Years', 'Valentines Day', 'Fourth of July', 'Halloween']
+    
     for label in label_detections:
-        if label.description in event_labels:
-            return {'event': label.description}
+        for keyword in event_keywords:
+            if keyword in label.description:
+                return {'event': keyword}
     
     # Default metadata if no specific labels are found
     return {'event': 'No Event'}
@@ -92,5 +94,5 @@ def upload_to_bucket(blob_name, file_path, bucket_name):
 
 
 # Example usage
-file_path = r"C:\Users\Hallo\Downloads\DIY-Valentines-Day-Crafts-Props_6-1440x2157.jpg"
-upload_and_tag_image('EventTest3', file_path, 'lifepath-data-bucket')
+file_path = r"C:\Users\Hallo\Downloads\christmas-gettyimages-184652817.jpg"
+upload_and_tag_image('EventTest4', file_path, 'lifepath-data-bucket')
