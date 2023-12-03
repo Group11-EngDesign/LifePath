@@ -12,6 +12,7 @@ from django.core import serializers
 from django.conf import settings
 import json
 import openai
+from apidetection.label import upload_and_tag_image
 from credentials import GPT3_API_KEY
 from .models import Image
 
@@ -161,16 +162,24 @@ print(download_file_from_bucket('demo_pic20231120_015517_598885', os.path.join(o
 
 # Create your views here.
 @api_view(["POST"])
-def Upload(name):
+def Upload(request):
     try:
-        image = name.data["photo"]
-        unique_affix = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
-        file_name = f"demo_pic{unique_affix}"
-        upload_to_bucket(file_name, image, bucket_name )
-        return JsonResponse(f"'{file_name}' uploaded to cloud", safe=False)
+        images = request.FILES.values()
+        for index, image in enumerate(images):
+            unique_affix = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
+            file_name = f"demo_pic{unique_affix}_{index}"
+            
+            # Read the content of the file in binary mode ('rb')
+            file_content = image.read()
+            
+            upload_and_tag_image(file_name, file_content, 'lifepath-data-bucket')  # Replace with your actual bucket name
+
+        return JsonResponse("image(s) uploaded to cloud", safe=False)
     except Exception as e:
         print(e)
         return Response(str(e), status.HTTP_400_BAD_REQUEST)
+
+
 
 @api_view(["GET"])
 def Gallery(request):

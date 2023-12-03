@@ -3,8 +3,8 @@ import os
 import pandas as pd
 from google.cloud import vision
 from google.cloud import storage
-from google_vision_ai import VisionAI
-from google_vision_ai import prepare_image_local, prepare_image_web, draw_boundary, draw_boundary_normalized
+from .google_vision_ai import VisionAI
+from .google_vision_ai import prepare_image_local, prepare_image_web, draw_boundary, draw_boundary_normalized
 
 # Instantiates a client
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = "essential-oasis-401701-72d556e2236a.json"
@@ -31,7 +31,7 @@ storage_client = storage.Client()
 #     print(label.score)
     
 
-# image_path = r"C:\Users\Hallo\Downloads\christmas-gettyimages-184652817.jpg"
+# image_path = r"C:\Users\Hallo\Downloads\360_F_285303360_sBKb94hwTNBZzptZUtXDJRHmsZWwCr1u.jpg"
 # image = prepare_image_local(image_path)   
 # va = VisionAI(client, image)
 # label_detections = va.label_detection()
@@ -94,5 +94,5 @@ def upload_to_bucket(blob_name, file_path, bucket_name):
 
 
 # Example usage
-file_path = r"C:\Users\Hallo\Downloads\christmas-gettyimages-184652817.jpg"
-upload_and_tag_image('EventTest4', file_path, 'lifepath-data-bucket')
+#file_path = r"C:\Users\Hallo\Downloads\christmas-gettyimages-184652817.jpg"
+#upload_and_tag_image('EventTest4', file_path, 'lifepath-data-bucket')

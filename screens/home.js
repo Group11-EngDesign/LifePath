@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker'; // Import Expo's ImagePicker
 import Constants from 'expo-constants'; // Import Constants to check permissions
+import * as FileSystem from 'expo-file-system';
 
 import { GPT3_API_KEY } from '../env';
 import { useFonts, Caveat_400Regular, Caveat_600SemiBold } from '@expo-google-fonts/caveat';
@@ -54,32 +55,40 @@ const Home = ({ navigation }) => {
     if (!result.cancelled) {
       // Handle the selected images using result.assets
       const formData = new FormData();
-      
-      result.assets.forEach((asset, index) => {
-        formData.append(`photo${index}`, {
-          uri: asset.uri,
-          type: 'image/jpeg',
-          name: `photo${index}.jpg`,
-        });
+  
+      result.assets.forEach(async (asset, index) => {
+        try {
+          const fileContent = await FileSystem.readAsStringAsync(asset.uri, {
+            encoding: FileSystem.EncodingType.Base64,
+          });
+          formData.append(`photo${index}`, {
+            uri: asset.uri,
+            type: 'image/jpeg',
+            name: `photo${index}.jpg`,
+            data: fileContent,
+          });
+        } catch (error) {
+          console.error(error);
+        }
       });
-      console.log(result);
-
+  
       axiosInstance.post(`http://${MY_IP}:8000/upload/`, formData, {
         headers: {
           'Authorization': `Bearer ${GPT3_API_KEY}`,
           'Content-Type': 'multipart/form-data',
         },
       })
-        .then(response => {
-          console.log(response.data);
-          // Handle success or display a success message to the user
-        })
-        .catch(err => {
-          console.error(err.message);
-          // Handle errors or display an error message to the user
-        });
+      .then(response => {
+        console.log(response.data);
+        // Handle success or display a success message to the user
+      })
+      .catch(err => {
+        console.error(err.message);
+        // Handle errors or display an error message to the user
+      });
     }
   };
+  
 
   const handleOpenPhotoGallery = () => {
     navigation.navigate('PhotoGallery');
