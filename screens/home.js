@@ -54,7 +54,7 @@ const Home = ({ navigation }) => {
       const formData = new FormData();
 
       result.assets.forEach((asset, index) => {
-        formData.append(`photo${index}`, {
+        formData.append(`photo`, {
           uri: asset.uri,
           type: 'image/jpeg',
           name: `photo${index}.jpg`,
