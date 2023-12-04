@@ -94,5 +94,5 @@ def upload_to_bucket(blob_name, file_path, bucket_name):
 
 
 # Example usage
-file_path = r"C:\Users\Hallo\Downloads\christmas-gettyimages-184652817.jpg"
-upload_and_tag_image('EventTest4', file_path, 'lifepath-data-bucket')
+#file_path = r"C:\Users\Hallo\Downloads\christmas-gettyimages-184652817.jpg"
+#upload_and_tag_image('EventTest4', file_path, 'lifepath-data-bucket')
