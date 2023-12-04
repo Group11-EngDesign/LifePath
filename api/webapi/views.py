@@ -105,7 +105,7 @@ def Hello(name):
 
 import os
 from google.cloud import storage
-from datetime import datetime
+from datetime import datetime, timedelta
 
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'essential-oasis-401701-72d556e2236a.json'
 
@@ -113,7 +113,7 @@ storage_client = storage.Client()
 
 # Create a New Bucket
 
-bucket_name ='lifepath-data-bucket' # Choose a valid an unique bucket name
+bucket_name ='lifepath-data-bucket'
 bucket = storage_client.bucket(bucket_name)
 # Create a new bucket with the location specified
 #bucket = storage_client.create_bucket(bucket_name, location='US') Commented out after bucket is already created
@@ -154,9 +154,9 @@ def download_file_from_bucket(blob_name, file_path, bucket_name):
         print(e)
         return False
 
-''' 
+'''
 bucket_name = 'lifepath-data-bucket'
-print(download_file_from_bucket('demo_pic20231120_015517_598885', os.path.join(os.getcwd(), 'file1.jpg'), bucket_name)) 
+print(download_file_from_bucket('demo_pic20231120_015517_598885', os.path.join(os.getcwd(), 'file1.jpg'), bucket_name))
 '''
 
 # Create your views here.
@@ -175,13 +175,21 @@ def Upload(name):
 @api_view(["GET"])
 def Gallery(request):
     try:
-        # Query all images from the database
-        images = Image.objects.all()
+        # List all objects in the bucket
+        blobs = storage_client.list_blobs(bucket)
 
-        # Serialize the images to JSON
-        serialized_images = serializers.serialize("json", images)
+        # Generate signed URLs
+        images = []
+        for index, blob in enumerate(blobs):
+            url = blob.generate_signed_url(
+                version="v4",
+                expiration=timedelta(minutes=15),  # URL valid for 15 minutes
+                method="GET"
+            )
+            images.append({'id': index, 'image': url})
 
-        return JsonResponse(serialized_images, safe=False)
+        # Return the list of image URLs
+        return JsonResponse(images, safe=False)
     except Exception as e:
         print(e)
         return Response(str(e), status.HTTP_400_BAD_REQUEST)

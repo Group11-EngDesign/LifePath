@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Image, FlatList, StyleSheet } from 'react-native';
 import axios from 'axios';
 
+import { MY_IP } from '../env';
+
 const ImageGallery = () => {
   const [images, setImages] = useState([]);
 
   React.useEffect(() => {
-    axios.get('http://10.0.0.3:8000/gallery/')
+    axios.get(`http://${MY_IP}:8000/gallery/`)
       .then(response => {
         console.log(response.data);
         setImages(response.data);

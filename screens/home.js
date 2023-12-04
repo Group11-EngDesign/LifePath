@@ -5,10 +5,8 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker'; // Import Expo's ImagePicker
 import Constants from 'expo-constants'; // Import Constants to check permissions
 
-import { GPT3_API_KEY } from '../env';
+import { GPT3_API_KEY, MY_IP } from '../env';
 import { useFonts, Caveat_400Regular, Caveat_600SemiBold } from '@expo-google-fonts/caveat';
-
-const MY_IP = "10.0.0.3"; // replace this with ur IP to communicate w backend
 
 const Home = ({ navigation }) => {
   const [query, setQuery] = useState(""); // Define query state
@@ -50,11 +48,11 @@ const Home = ({ navigation }) => {
       aspect: [4, 3],
       quality: 1,
     });
-  
+
     if (!result.cancelled) {
       // Handle the selected images using result.assets
       const formData = new FormData();
-      
+
       result.assets.forEach((asset, index) => {
         formData.append(`photo${index}`, {
           uri: asset.uri,
@@ -145,10 +143,10 @@ const Home = ({ navigation }) => {
         </TouchableOpacity>
 
         <TouchableOpacity
-        style={styles.searchButton}
-        onPress={handleOpenDatabaseGallery}>
-        <Text style={styles.buttonText}>DATABASE GALLERY</Text>
-      </TouchableOpacity>
+          style={styles.searchButton}
+          onPress={handleOpenDatabaseGallery}>
+          <Text style={styles.buttonText}>DATABASE GALLERY</Text>
+        </TouchableOpacity>
       </View>
 
       <Text>{reply}</Text>
