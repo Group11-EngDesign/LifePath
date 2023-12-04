@@ -4,11 +4,14 @@ import axios from 'axios';
 
 import { MY_IP } from '../env';
 
-const ImageGallery = () => {
+const ImageGallery = ({ route }) => {
   const [images, setImages] = useState([]);
+  const { event } = route.params;
 
-  React.useEffect(() => {
-    axios.get(`http://${MY_IP}:8000/gallery/`)
+  useEffect(() => {
+    axios.get(`http://${MY_IP}:8000/gallery/`, {
+      params: { event: event }
+    })
       .then(response => {
         console.log(response.data);
         setImages(response.data);
@@ -16,7 +19,7 @@ const ImageGallery = () => {
       .catch(error => {
         console.error(error);
       });
-  }, []);
+  }, [event]);
 
   return (
     <View>
@@ -24,15 +27,13 @@ const ImageGallery = () => {
         data={images}
         keyExtractor={(item, index) => (item.id ? item.id.toString() : index.toString())}
         renderItem={({ item }) => (
-          <View>
+          <View style={styles.itemContainer}>
             {item.image ? (
-              <Image
-                source={{ uri: item.image }}
-                style={styles.image}
-              />
+              <Image source={{ uri: item.image }} style={styles.image} />
             ) : (
               <Text>Invalid Image Data</Text>
             )}
+            <Text style={styles.eventText}>{item.event}</Text>
           </View>
         )}
       />
@@ -45,6 +46,14 @@ const styles = StyleSheet.create({
     width: 200,
     height: 200,
     margin: 5,
+  },
+  itemContainer: {
+    marginBottom: 10,
+    alignItems: 'center',
+  },
+  eventText: {
+    fontSize: 16,
+    marginTop: 5,
   },
 });
 

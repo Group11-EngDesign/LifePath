@@ -14,6 +14,7 @@ import json
 import openai
 from credentials import GPT3_API_KEY
 from .models import Image
+from datetime import datetime, timedelta
 
 # Import necessary modules
 from django.core.files.storage import default_storage
@@ -45,7 +46,7 @@ starter_prompt = [
         """If a given date is nonspecific, choose the widest range possible.
         For example, if they say '2015', assume that means 'from 2015-01-01 to 2015-12-31.'"""
     ),
-    context("Today's date is October 2, 2023."),
+    context(f"Today's date is {datetime.now().strftime('%B %d, %Y')}."),
     *sample_interaction(
         "How many pictures do I have from 2015?",
         "from:2015-01-01;to:2015-12-31",
@@ -68,12 +69,57 @@ starter_prompt = [
     ),
 ]
 
+event_prompt = [
+    # context
+    context(
+        "You match a query to a finite set of possible events based on what is in the query"
+    ),
+    context(
+        """The user wants photos that match certain tags *exactly*.
+        You must identify which tag most closely represents the query.
+        If no tags match, suggest 'No Event'"""
+    ),
+    context(
+        """The possible tags (comma-separated) are:
+        Christmas,New Years,Fourth of July,Valentines Day,Thanksgiving,Halloween,No Event
+        """
+    ),
+    *sample_interaction(
+        "Show me Thanksgiving photos",
+        "Thanksgiving",
+    ),
+    *sample_interaction(
+        "Show photos from the fireworks show last year",
+        "Fourth of July",
+    ),
+    *sample_interaction(
+        "I wanna see pics from when we saw the ball drop in times square!",
+        "New Years",
+    ),
+    *sample_interaction(
+        "Show me photos from the time my kids met Santa Claus",
+        "Christmas",
+    ),
+    *sample_interaction(
+        "Show me selfies from when my hair was shorter",
+        "No Event",
+    ),
+    *sample_interaction(
+        "photos from trip to jamaica",
+        "No Event",
+    ),
+    *sample_interaction(
+        "photos from when I went trick or treating!",
+        "Halloween",
+    ),
+]
 
-def prompt_gpt(msg: str) -> str:
+
+def prompt_gpt(msg: str, starter = starter_prompt) -> str:
     # provide our example interactions + the new test msg
     response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
-        messages=starter_prompt + [{"role": "user", "content": msg}],
+        messages=starter + [{"role": "user", "content": msg}],
         temperature=0,  # ensures responses are deterministic
     )  # type: ignore
     return response["choices"][0]["message"]["content"]  # type: ignore
@@ -105,7 +151,7 @@ def Hello(name):
 
 import os
 from google.cloud import storage
-from datetime import datetime, timedelta
+
 
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'essential-oasis-401701-72d556e2236a.json'
 
@@ -154,10 +200,6 @@ def download_file_from_bucket(blob_name, file_path, bucket_name):
         print(e)
         return False
 
-'''
-bucket_name = 'lifepath-data-bucket'
-print(download_file_from_bucket('demo_pic20231120_015517_598885', os.path.join(os.getcwd(), 'file1.jpg'), bucket_name))
-'''
 
 # Create your views here.
 @api_view(["POST"])
@@ -176,22 +218,31 @@ def Upload(request):
 
 @api_view(["GET"])
 def Gallery(request):
-    try:
-        # List all objects in the bucket
-        blobs = storage_client.list_blobs(bucket)
+    event_query = request.GET.get('event')
+    parsed_event = None
 
-        # Generate signed URLs
+    try:
+        blobs = storage_client.list_blobs(bucket)
         images = []
+
         for index, blob in enumerate(blobs):
+            blob_event = blob.metadata.get('event', 'No Event') if blob.metadata else 'No Event'
+            if event_query:
+                parsed_event = prompt_gpt(event_query, starter=event_prompt)
+            # Filter by event if event_query is specified
+            if parsed_event and parsed_event.lower() != blob_event.lower():
+                continue
+
             url = blob.generate_signed_url(
                 version="v4",
-                expiration=timedelta(minutes=15),  # URL valid for 15 minutes
+                expiration=timedelta(minutes=15),
                 method="GET"
             )
-            images.append({'id': index, 'image': url})
 
-        # Return the list of image URLs
+            images.append({'id': index, 'image': url, 'event': blob_event})
+
         return JsonResponse(images, safe=False)
     except Exception as e:
         print(e)
         return Response(str(e), status.HTTP_400_BAD_REQUEST)
+

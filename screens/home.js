@@ -84,8 +84,9 @@ const Home = ({ navigation }) => {
   };
 
   const handleOpenDatabaseGallery = () => {
-    navigation.navigate('ImageGallery');
+    navigation.navigate('ImageGallery', { event: query });
   };
+
 
   const processQuery = () => {
     console.log(query);
@@ -120,6 +121,7 @@ const Home = ({ navigation }) => {
       <View style={styles.searchBarContainer}>
         <TextInput
           style={styles.searchBar}
+          multiline={true}
           defaultValue=''
           placeholder="Ex. Find pictures from 2016..."
           value={query}
