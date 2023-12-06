@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, FlatList, StyleSheet } from 'react-native';
+import { View, Text, Image, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
 import axios from 'axios';
 
 import { MY_IP } from '../env';
 
 const ImageGallery = ({ route }) => {
   const [images, setImages] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const { event } = route.params;
 
   useEffect(() => {
+    setIsLoading(true);
     axios.get(`http://${MY_IP}:8000/gallery/`, {
       params: { event: event }
     })
@@ -18,8 +20,18 @@ const ImageGallery = ({ route }) => {
       })
       .catch(error => {
         console.error(error);
-      });
+      })
+      .finally(() => setIsLoading(false));
   }, [event]);
+
+  if (isLoading) {
+    return (
+      <View style={styles.centered}>
+        <ActivityIndicator size="large" color="#0000ff" />
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
 
   return (
     <View>
@@ -54,6 +66,11 @@ const styles = StyleSheet.create({
   eventText: {
     fontSize: 16,
     marginTop: 5,
+  },
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
   },
 });
 
