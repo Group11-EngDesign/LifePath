@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker'; // Import Expo's ImagePicker
 import Constants from 'expo-constants'; // Import Constants to check permissions
+import { LogBox } from 'react-native'; LogBox.ignoreAllLogs(); // for demos
 
 import { GPT3_API_KEY, MY_IP } from '../env';
 import { useFonts, Caveat_400Regular, Caveat_600SemiBold } from '@expo-google-fonts/caveat';
