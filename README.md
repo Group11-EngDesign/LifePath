@@ -15,12 +15,8 @@ LifePath is a mobile application that gives users a more personalized photo memo
 ## Table of Contents
 
 - [Installation](#installation)
-- [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
 
 ## Installation
-
 
 ```bash
 npm install 
