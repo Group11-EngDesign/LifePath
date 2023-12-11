@@ -23,8 +23,13 @@ LifePath is a mobile application that gives users a more personalized photo memo
 
 
 ```bash
-npm install my-project
+npm install 
 ```
+
+```bash
+pip install
+```
+
 
 
 
